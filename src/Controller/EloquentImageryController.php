@@ -44,17 +44,17 @@ class EloquentImageryController extends Controller
         /** @var Filesystem $filesystem */
         $filesystem = app(FilesystemManager::class)->disk($disk);
 
-        $pathinfo = pathinfo($path);
-        $storagePath = $pathinfo['dirname'] . '/';
+        $pathInfo = pathinfo($path);
+        $storagePath = $pathInfo['dirname'] . '/';
 
         $modifierOperators = [];
 
-        $filenameWithoutExtension = $pathinfo['filename'];
+        $filenameWithoutExtension = $pathInfo['filename'];
 
         if (strpos($filenameWithoutExtension, '.') !== false) {
-            $filenameParts = explode(".", $filenameWithoutExtension);
+            $filenameParts = explode('.', $filenameWithoutExtension);
             $filenameWithoutExtension = $filenameParts[0];
-            $storagePath .= "{$filenameWithoutExtension}.{$pathinfo['extension']}";
+            $storagePath .= "{$filenameWithoutExtension}.{$pathInfo['extension']}";
 
             $modifierSpecs = array_slice($filenameParts, 1);
 
@@ -62,18 +62,14 @@ class EloquentImageryController extends Controller
                 $matches = [];
                 foreach ($this->urlOperators as $operator => $regex) {
                     if (preg_match($regex, $modifierSpec, $matches)) {
-                        $arg = null;
-                        if (isset($matches[1])) {
-                            $arg = $matches[1];
-                        } else {
-                            $arg = true;
-                        }
+                        $arg = $matches[1] ?? true;
+
                         $modifierOperators[$operator] = $arg;
                     }
                 }
             }
         } else {
-            $storagePath .= $pathinfo['basename'];
+            $storagePath .= $pathInfo['basename'];
         }
 
         // assume the mime type is PNG unless otherwise specified

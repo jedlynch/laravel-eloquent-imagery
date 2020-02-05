@@ -10,6 +10,7 @@ use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use finfo;
+use Illuminate\Support\Traits\Macroable;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use RuntimeException;
@@ -25,6 +26,8 @@ use RuntimeException;
  */
 class Image implements \JsonSerializable
 {
+    use Macroable;
+
     /** @var Filesystem|Cloud */
     protected static $filesystem = null;
 
