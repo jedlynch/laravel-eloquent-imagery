@@ -19,6 +19,40 @@
 
             <AddImageButton v-on:image-added="addImage" />
           </draggable>
+
+          <portal to="modals" v-if="showMemorySizeAlert">
+            <modal @modal-close="handleClose">
+              <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-8">
+                  <heading :level="2" class="mb-6">Warning image is {{fileSize}}</heading>
+                  <p class="text-80">
+                    {{ __('Are you sure you want to upload this image?') }}
+                  </p>
+                </div>
+                <div class="bg-30 px-6 py-3 flex">
+                  <div class="ml-auto">
+                    <button dusk="cancel-upload-delete-button"
+                            type="button"
+                            data-testid="cancel-button"
+                            @click.prevent="handleClose"
+                            class="btn text-80 font-normal h-9 px-3 mr-3 btn-link"
+                    >
+                      {{ __('Cancel') }}
+                    </button>
+
+                    <button dusk="confirm-upload-delete-button"
+                            ref="confirmButton"
+                            data-testid="confirm-button"
+                            @click.prevent="handleConfirm"
+                            class="btn btn-default btn-danger"
+                    >
+                      {{ __('Upload') }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </modal>
+          </portal>
         </div>
 
       </div>
@@ -49,6 +83,7 @@
     data () {
       return {
         images: [],
+        showMemorySizeAlert: false
       }
     },
 
@@ -66,10 +101,21 @@
           }
         })
       },
-
       addImage (event, metadata = {}) {
-        let file = event.target.files[0]
+        let file = event.target.files[0];
+        this.file = file;
+        this.metadata = metadata;
 
+        if (this.field.maximumSize && file.size > this.field.maximumSize) {
+          this.fileSize = file.size;
+          this.showMemorySizeAlert = true;
+        }else{
+          this.confirmAddImage();
+        }
+      },
+      confirmAddImage() {
+        let file = this.file;
+        let metadata = this.metadata;
         let imageUrl = URL.createObjectURL(file)
 
         let image = {
@@ -112,7 +158,31 @@
 
         formData.append(this.field.attribute, JSON.stringify(this.field.isCollection ? serializedImages : serializedImages.pop()))
       },
-
+      handleClose() {
+        this.$emit('close')
+        this.showMemorySizeAlert = false;
+      },
+      handleConfirm() {
+        this.$emit('confirm')
+        this.showMemorySizeAlert = false;
+        this.confirmAddImage();
+      }
+    },
+    computed: {
+      fileSize () {
+        if(!this.file){
+          return;
+        }
+        let fileSize = this.file.size;
+        switch(true){
+          case (fileSize/1000000 > 1):
+            return Math.round(s/1000000) +'MB';
+          case (fileSize/1000 > 1):
+            return Math.round(fileSize/1000) +'KB';
+          default:
+            return fileSize;
+        }
+      }
     }
   }
 </script>
