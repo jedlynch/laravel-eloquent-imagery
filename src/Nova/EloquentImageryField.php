@@ -80,7 +80,8 @@ class EloquentImageryField extends Field
             'nullable'        => $this->nullable,
             'readonly'        => $this->isReadonly(app(NovaRequest::class)),
             'textAlign'       => $this->textAlign,
-            'isCollection'    => $isCollection
+            'isCollection'    => $isCollection,
+            'maximumSize'     => $this->maxiumSize,
         ], $this->meta());
     }
 
