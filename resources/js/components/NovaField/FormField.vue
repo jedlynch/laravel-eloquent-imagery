@@ -24,7 +24,7 @@
             <modal @modal-close="handleClose">
               <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div class="p-8">
-                  <heading :level="2" class="mb-6">Warning image is {{fileSize}}</heading>
+                  <heading :level="2" class="mb-6">Warning image is {{fileSizeFormatted()}}</heading>
                   <p class="text-80">
                     {{ __('Are you sure you want to upload this image?') }}
                   </p>
@@ -166,17 +166,15 @@
         this.$emit('confirm')
         this.showMemorySizeAlert = false;
         this.confirmAddImage();
-      }
-    },
-    computed: {
-      fileSize () {
+      },
+      fileSizeFormatted() {
         if(!this.file){
           return;
         }
         let fileSize = this.file.size;
         switch(true){
           case (fileSize/1000000 > 1):
-            return Math.round(s/1000000) +'MB';
+            return Math.round(fileSize/1000000) +'MB';
           case (fileSize/1000 > 1):
             return Math.round(fileSize/1000) +'KB';
           default:
