@@ -20,13 +20,13 @@
             <AddImageButton v-on:image-added="addImage" />
           </draggable>
 
-          <portal to="modals" v-if="showMemorySizeAlert">
+          <portal to="modals" v-if="showModal">
             <modal @modal-close="handleClose">
               <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div class="p-8">
-                  <heading :level="2" class="mb-6">Warning image is {{fileSizeFormatted()}}</heading>
+                  <heading :level="2" class="mb-6">{{modal.header}}</heading>
                   <p class="text-80">
-                    {{ __('Are you sure you want to upload this image?') }}
+                    {{modal.message}}
                   </p>
                 </div>
                 <div class="bg-30 px-6 py-3 flex">
@@ -40,7 +40,8 @@
                       {{ __('Cancel') }}
                     </button>
 
-                    <button dusk="confirm-upload-delete-button"
+                    <button v-if="modal.showConfirm"
+                            dusk="confirm-upload-delete-button"
                             ref="confirmButton"
                             data-testid="confirm-button"
                             @click.prevent="handleConfirm"
@@ -83,7 +84,12 @@
     data () {
       return {
         images: [],
-        showMemorySizeAlert: false
+        modal: {
+          'header': '',
+          'message': '',
+          'showConfirm': false
+        },
+        showModal:false
       }
     },
 
@@ -103,14 +109,32 @@
       },
       addImage (event, metadata = {}) {
         let file = event.target.files[0];
+        let fileType = file.type.replace('image/','');
         this.file = file;
         this.metadata = metadata;
 
-        if (this.field.maximumSize && file.size > this.field.maximumSize) {
-          this.fileSize = file.size;
-          this.showMemorySizeAlert = true;
-        }else{
-          this.confirmAddImage();
+        switch(true){
+          case (['jpg','png','gif'].indexOf(fileType) == -1):
+            this.renderModal(
+                    'A '+ fileType +' image is unsupported.',
+                    'An image must be in a .jpg, .png, or .gif format.',
+                    false
+            );
+
+            break;
+
+          case (this.field.maximumSize && file.size > this.field.maximumSize):
+            this.fileSize = file.size;
+            this.renderModal(
+                    'Are you sure you want to upload this image?',
+                    'Warning image is ' + this.fileSizeFormatted(),
+                    true
+            );
+
+            break;
+
+          default:
+            this.confirmAddImage();
         }
       },
       confirmAddImage() {
@@ -139,6 +163,15 @@
           reader.readAsDataURL(file)
         })
       },
+      renderModal(header,message,showConfirm){
+        this.modal = {
+          'header': header,
+          'message': message,
+          'showConfirm': showConfirm
+        };
+
+        this.showModal = true;
+      },
 
       removeImage (imageToRemove) {
         this.images = this.images.filter(image => image !== imageToRemove)
@@ -160,11 +193,11 @@
       },
       handleClose() {
         this.$emit('close')
-        this.showMemorySizeAlert = false;
+        this.showModal = false;
       },
       handleConfirm() {
         this.$emit('confirm')
-        this.showMemorySizeAlert = false;
+        this.showModal = false;
         this.confirmAddImage();
       },
       fileSizeFormatted() {
