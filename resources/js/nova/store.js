@@ -54,30 +54,6 @@ export default {
     },
 
     addImage ({ state, commit }, image) {
-
-
-
-      switch(true){
-        case (['jpg','png','gif'].indexOf(fileType) == -1):
-          this.renderModal(
-              'A '+ fileType +' image is unsupported.',
-              'An image must be in a .jpg, .png, or .gif format.',
-              false
-          );
-
-          break;
-
-        case (this.field.maximumSize && file.size > this.field.maximumSize):
-          this.fileSize = file.size;
-          this.renderModal(
-              'Are you sure you want to upload this image?',
-              'Warning image is ' + this.fileSizeFormatted(),
-              true
-          );
-
-          break;
-
-
       let images = state.images
       images.push(image)
 
