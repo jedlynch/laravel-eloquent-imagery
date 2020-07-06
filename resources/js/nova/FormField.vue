@@ -209,11 +209,11 @@
         this.$store.dispatch(`eloquentImagery/${this.field.name}/removeImage`, image)
       },
 
-      fileSizeFormatted() {
-        if(!this.file){
+      fileSizeFormatted(file) {
+        if(!file){
           return;
         }
-        let fileSize = this.file.size;
+        let fileSize = file.size;
         switch(true){
           case (fileSize/1000000 > 1):
             return Math.round(fileSize/1000000) +'MB';
