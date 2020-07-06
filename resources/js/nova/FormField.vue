@@ -180,6 +180,8 @@
               resolve(image)
             })
             reader.readAsDataURL(file)
+          }).catch(()=>{
+            //
           });
         })
       },
