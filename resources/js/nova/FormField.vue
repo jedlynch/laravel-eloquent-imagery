@@ -1,10 +1,10 @@
 <template>
-  <default-field :field="field" :errors="errors" full-width-content="true">
+  <default-field :field="field" :errors="errors" :full-width-content="true">
     <template slot="field">
       <div class="bg-white rounded-lg">
         <draggable v-model="images" group="image-group" v-on:start="drag=true" v-on:end="drag=false" :class="`flex flex-wrap mb-2 laravel-eloquent-imagery-${this.resourceName}`">
           <div v-for="(image, index) in images" :class="`pl-1 pr-1 border border-70 flex items-end m-1 laravel-eloquent-imagery-image-${(index + 1)}`">
-            <image-card-input v-bind:image.sync="image" v-on:remove-image="removeImage"></image-card-input>
+              <image-card-input v-bind:image.sync="image" v-on:remove-image="removeImage"></image-card-input>
           </div>
 
           <!--<button v-on:click.prevent="debugThis">De</button>-->
@@ -12,12 +12,12 @@
           <div v-if="(isCollection == false && images.length == 0) || isCollection" slot="footer" class="flex items-center pl-1 pr-1 m-1 border border-70">
             <div class="content-center px-6 py-4">
               <input
-                      ref="addNewImageFileInput"
-                      class="select-none form-file-input"
-                      type="file"
-                      v-bind:id="`eloquent-imagery-` + this.field.name + `-add-image`"
-                      name="name"
-                      v-on:change="addImage"
+                ref="addNewImageFileInput"
+                class="select-none form-file-input"
+                type="file"
+                v-bind:id="`eloquent-imagery-` + this.field.name + `-add-image`"
+                name="name"
+                v-on:change="addImage"
               />
 
               <span v-on:click="() => this.$refs['addNewImageFileInput'].click()">
@@ -43,7 +43,8 @@
                   <button dusk="cancel-upload-delete-button"
                           type="button"
                           data-testid="cancel-button"
-                          @click.prevent="handleClose"
+                          v-bind:value="false"
+                          @click.prevent="$emit('close', $event.target.value)"
                           class="btn text-80 font-normal h-9 px-3 mr-3 btn-link"
                   >
                     {{ __('Cancel') }}
@@ -53,7 +54,8 @@
                           dusk="confirm-upload-delete-button"
                           ref="confirmButton"
                           data-testid="confirm-button"
-                          @click.prevent="handleConfirm"
+                          v-bind:value="true"
+                          @click.prevent="$emit('close', $event.target.value)"
                           class="btn btn-default btn-danger"
                   >
                     {{ __('Upload') }}
@@ -65,7 +67,6 @@
         </portal>
 
       </div>
-
     </template>
   </default-field>
 </template>
@@ -93,7 +94,8 @@
           'message': '',
           'showConfirm': false
         },
-        showModal: false
+        showModal: false,
+        modalOption: false
       }
     },
     computed: {
@@ -120,48 +122,23 @@
         let isCollection = this.field.isCollection
 
         let images = (isCollection ? this.field.value.images : (this.field.value ? [this.field.value] : []))
-                .map((image, i) => {
-                  return {
-                    inputId: 'eloquent-imagery-' + this.field.name + '-' + i,
-                    previewUrl: image.previewUrl,
-                    thumbnailUrl: image.thumbnailUrl,
-                    path: image.path,
-                    metadata: Object.keys(image.metadata).map(key => ({'key': key, 'value': image.metadata[key]}))
-                  }
-                })
+          .map((image, i) => {
+            return {
+              inputId: 'eloquent-imagery-' + this.field.name + '-' + i,
+              previewUrl: image.previewUrl,
+              thumbnailUrl: image.thumbnailUrl,
+              path: image.path,
+              metadata: Object.keys(image.metadata).map(key => ({'key': key, 'value': image.metadata[key]}))
+            }
+          })
 
         this.$store.commit(`eloquentImagery/${this.field.name}/initialize`, { fieldName: this.field.name, isCollection, images })
       },
+
       addImage (event, metadata = {}) {
         let file = event.target.files[0]
         let fileType = file.type.replace('image/','');
-        this.file = file;
-        this.metadata = metadata;
-
-        switch (true) {
-          case (['jpg', 'jpeg', 'png', 'gif'].indexOf(fileType) == -1):
-            this.renderModal(
-                    'A ' + fileType + ' image is unsupported.',
-                    'An image must be in a .jpg, .png, or .gif format.',
-                    false
-            );
-            break;
-          case (this.field.maximumSize && file.size > this.field.maximumSize):
-            this.fileSize = file.size;
-            this.renderModal(
-                    'Are you sure you want to upload this image?',
-                    'Warning image is ' + this.fileSizeFormatted(),
-                    true
-            );
-            break;
-          default:
-            this.confirmAddImage();
-        }
-      },
-      confirmAddImage () {
-        let file = this.file;
-        let metadata = this.metadata;
-        let imageUrl = URL.createObjectURL(file);
+        let imageUrl = URL.createObjectURL(file)
 
         let image = {
           inputId: 'eloquent-imagery-' + this.field.name + '-' + (this.images.length + 1),
@@ -170,35 +147,68 @@
           metadata: Object.keys(metadata).map(key => ({'key': key, 'value': metadata[key]}))
         }
 
-        this.$store.dispatch(`eloquentImagery/${this.field.name}/addImage`, image)
+        let modalPromise;
+        switch (true) {
+          case (['jpg', 'jpeg', 'png', 'gif'].indexOf(fileType) == -1):
+            modalPromise = this.renderModal(
+                    'A ' + fileType + ' image is unsupported.',
+                    'An image must be in a .jpg, .png, or .gif format.',
+                    false
+            );
+            break;
+          case (this.field.maximumSize && file.size > this.field.maximumSize):
+            modalPromise = this.renderModal(
+                    'Are you sure you want to upload this image?',
+                    'Warning image is ' + this.fileSizeFormatted(file),
+                    true
+            );
+            break;
 
-        return new Promise((resolve, reject) => {
-          let reader = new FileReader()
+          default:
+            modalPromise = new Promise((resolve) => {
+              resolve;
+            });
+        }
 
-          reader.addEventListener('load', () => {
-            image.fileData = reader.result
-
-            resolve(image)
-          })
-
-          reader.readAsDataURL(file)
+        let object = this;
+        modalPromise.then(()=>{
+          object.$store.dispatch(`eloquentImagery/${object.field.name}/addImage`, image);
+          return new Promise((resolve, reject) => {
+            let reader = new FileReader()
+            reader.addEventListener('load', () => {
+              image.fileData = reader.result
+              resolve(image)
+            })
+            reader.readAsDataURL(file)
+          });
         })
       },
-      removeImage (image) {
-        this.$store.dispatch(`eloquentImagery/${this.field.name}/removeImage`, image)
-      },
-      renderModal(header,message,showConfirm){
+
+      renderModal(header,message,showConfirm,callback){
         this.modal = {
           'header': header,
           'message': message,
           'showConfirm': showConfirm
         };
-        this.showModal = true;
+
+        let object = this;
+        return new Promise((resolve, reject) => {
+          object.showModal = true;
+          object.$on('close', (modalOption) => {
+            object.showModal = false;
+            if(modalOption){
+              resolve();
+            }else{
+              reject();
+            }
+          })
+        });
       },
-      handleClose() {
-        this.$emit('close')
-        this.showModal = false;
+
+      removeImage (image) {
+        this.$store.dispatch(`eloquentImagery/${this.field.name}/removeImage`, image)
       },
+
       fileSizeFormatted() {
         if(!this.file){
           return;
@@ -213,6 +223,7 @@
             return fileSize;
         }
       },
+
       fill (formData) {
         let serializedImages = this.images.map(image => ({
           fileData: (image.hasOwnProperty('fileData') ? image.fileData : null),
