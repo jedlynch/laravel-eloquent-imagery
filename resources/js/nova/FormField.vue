@@ -171,7 +171,11 @@
         }
 
         let object = this;
-        modalPromise.then(()=>{
+        modalPromise.then((shouldLoadImage)=>{
+          if(!shouldLoadImage){
+            object.removeImage(image);
+            return;
+          }
           object.$store.dispatch(`eloquentImagery/${object.field.name}/addImage`, image);
           return new Promise((resolve, reject) => {
             let reader = new FileReader()
@@ -180,9 +184,7 @@
               resolve(image)
             })
             reader.readAsDataURL(file)
-          }).catch(()=>{
-            //
-          });
+          })
         })
       },
 
@@ -198,17 +200,14 @@
           object.showModal = true;
           object.$on('close', (modalOption) => {
             object.showModal = false;
-            if(modalOption){
-              resolve();
-            }else{
-              reject();
-            }
+            resolve(modalOption)
           })
         });
       },
 
       removeImage (image) {
         this.$store.dispatch(`eloquentImagery/${this.field.name}/removeImage`, image)
+        this.$refs['addNewImageFileInput'].value = null;
       },
 
       fileSizeFormatted(file) {
