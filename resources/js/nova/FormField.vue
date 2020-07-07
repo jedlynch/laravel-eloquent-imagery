@@ -154,19 +154,19 @@
                     'A ' + fileType + ' image is unsupported.',
                     'An image must be in a .jpg, .png, or .gif format.',
                     false
-            );
+                    );
             break;
           case (this.field.maximumSize && file.size > this.field.maximumSize):
             modalPromise = this.renderModal(
                     'Are you sure you want to upload this image?',
                     'Warning image is ' + this.fileSizeFormatted(file),
                     true
-            );
+                    );
             break;
 
           default:
             modalPromise = new Promise((resolve) => {
-              resolve;
+              resolve(true);
             });
         }
 
