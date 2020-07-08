@@ -5,30 +5,18 @@ namespace ZiffMedia\Laravel\EloquentImagery\Controller;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\FilesystemManager;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
-use ZiffMedia\Laravel\EloquentImagery\Image\ImageModifier;
+use ZiffMedia\Laravel\EloquentImagery\Image\ImageTransformer;
 use ZiffMedia\Laravel\EloquentImagery\Image\PlaceholderImageFactory;
 
 class EloquentImageryController extends Controller
 {
-    /**
-     * Parsers for url route modifiers
-     *
-     * @var array
-     */
-    protected $urlOperators = [
-        'size'      => '/^size_([0-9]*x[0-9]*)$/', // set width
-        'fit'       => '/^fit_([a-z]+)$/', // set height
-        'grayscale' => '/^grayscale$/', // grayscale
-        'quality'   => '/^quality_([0-9]+)/', //quality, if applicable
-        'bgcolor'   => '/^bg_([\da-f]{6})$/', // background hex
-        'trim'      => '/^trim_(\d+)$/', // trim, tolerance
-        'crop'      => '/^crop_([\d,?]+)$/' // crop operations
-    ];
-
-    public function render($path)
+    public function render(Request $request)
     {
+        $path = $request->route('path');
+
         $cacheEnabled = config('eloquent-imagery.render.caching.enable', false);
         $cacheDriver = config('eloquent-imagery.render.caching.driver', 'disk');
 
@@ -44,49 +32,24 @@ class EloquentImageryController extends Controller
         /** @var Filesystem $filesystem */
         $filesystem = app(FilesystemManager::class)->disk($disk);
 
-        $pathInfo = pathinfo($path);
-        $storagePath = $pathInfo['dirname'] . '/';
-
-        $modifierOperators = [];
-
-        $filenameWithoutExtension = $pathInfo['filename'];
-
-        if (strpos($filenameWithoutExtension, '.') !== false) {
-            $filenameParts = explode('.', $filenameWithoutExtension);
-            $filenameWithoutExtension = $filenameParts[0];
-            $storagePath .= "{$filenameWithoutExtension}.{$pathInfo['extension']}";
-
-            $modifierSpecs = array_slice($filenameParts, 1);
-
-            foreach ($modifierSpecs as $modifierSpec) {
-                $matches = [];
-                foreach ($this->urlOperators as $operator => $regex) {
-                    if (preg_match($regex, $modifierSpec, $matches)) {
-                        $arg = $matches[1] ?? true;
-
-                        $modifierOperators[$operator] = $arg;
-                    }
-                }
-            }
-        } else {
-            $storagePath .= $pathInfo['basename'];
-        }
+        $imageRequest = ImageRequest::create($request);
 
         // assume the mime type is PNG unless otherwise specified
         $mimeType = 'image/png';
         $imageBytes = null;
 
         // step 1: if placeholder request, generate a placeholder
-        if ($filenameWithoutExtension === config('eloquent-imagery.render.placeholder.filename') && config('eloquent-imagery.render.placeholder.enable')) {
+        // if ($filenameWithoutExtension === config('eloquent-imagery.render.placeholder.filename') && config('eloquent-imagery.render.placeholder.enable')) {
+        if ($imageRequest->isPlaceholderRequest()) {
             list ($placeholderWidth, $placeholderHeight) = isset($modifierOperators['size']) ? explode('x', $modifierOperators['size']) : [400, 400];
             $imageBytes = (new PlaceholderImageFactory())->create($placeholderWidth, $placeholderHeight, $modifierOperators['bgcolor'] ?? null);
         }
 
-        // step 2: no placeholder, look for actual file on desiganted filesystem
+        // step 2: no placeholder, look for actual file on designated filesystem
         if (!$imageBytes) {
             try {
-                $imageBytes = $filesystem->get($storagePath);
-                $mimeType = $filesystem->getMimeType($storagePath);
+                $imageBytes = $filesystem->get($imageRequest->imagePath);
+                $mimeType = $filesystem->getMimeType($imageRequest->imagePath);
             } catch (FileNotFoundException $e) {
                 $imageBytes = null;
             }
@@ -97,10 +60,10 @@ class EloquentImageryController extends Controller
             /** @var Filesystem $fallbackFilesystem */
             $fallbackFilesystem = app(FilesystemManager::class)->disk(config('eloquent-imagery.render.fallback.filesystem'));
             try {
-                $imageBytes = $fallbackFilesystem->get($storagePath);
-                $mimeType = $fallbackFilesystem->getMimeType($storagePath);
+                $imageBytes = $fallbackFilesystem->get($imageRequest->imagePath);
+                $mimeType = $fallbackFilesystem->getMimeType($imageRequest->imagePath);
                 if (config('eloquent-imagery.render.fallback.mark_images')) {
-                    $imageModifier = new ImageModifier();
+                    $imageModifier = new ImageTransformer();
                     $imageBytes = $imageModifier->addFromFallbackWatermark($imageBytes);
                 }
             } catch (FileNotFoundException $e) {
@@ -116,11 +79,7 @@ class EloquentImageryController extends Controller
 
         abort_if(!$imageBytes, 404); // no image, no fallback, no placeholder
 
-        $imageModifier = new ImageModifier();
-        foreach ($modifierOperators as $operator => $arg) {
-            call_user_func_array([$imageModifier, 'set' . ucfirst($operator)], [$arg]);
-        }
-        $imageBytes = $imageModifier->modify($imageBytes);
+        $imageBytes = ImageTransformer::createDefault()->transform($imageRequest->imageModifiers, $imageBytes);
 
         $browserCacheMaxAge = config('eloquent-imagery.render.browser_cache_max_age');
 

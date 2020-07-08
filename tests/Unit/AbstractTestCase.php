@@ -1,10 +1,11 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Test\Unit\Eloquent;
+namespace ZiffMedia\Laravel\EloquentImagery\Test\Unit;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Orchestra\Testbench\TestCase;
+use ZiffMedia\Laravel\EloquentImagery\EloquentImageryProvider;
 
 abstract class AbstractTestCase extends TestCase
 {
@@ -17,6 +18,11 @@ abstract class AbstractTestCase extends TestCase
         ]);
 
         Carbon::setTestNow(Carbon::now());
+    }
+
+    protected function getPackageProviders($app)
+    {
+        return [EloquentImageryProvider::class];
     }
 
     public function tearDown(): void

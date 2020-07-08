@@ -3,15 +3,16 @@
 namespace ZiffMedia\Laravel\EloquentImagery\Eloquent;
 
 use Carbon\Carbon;
+use finfo;
 use Illuminate\Contracts\Filesystem\Cloud;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
-use finfo;
 use Illuminate\Support\Traits\Macroable;
 use InvalidArgumentException;
+use JsonSerializable;
 use OutOfBoundsException;
 use RuntimeException;
 
@@ -24,7 +25,7 @@ use RuntimeException;
  * @property-read $hash,
  * @property-read $timestamp,
  */
-class Image implements \JsonSerializable
+class Image implements JsonSerializable
 {
     use Macroable;
 

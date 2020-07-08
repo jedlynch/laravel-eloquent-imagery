@@ -6,16 +6,17 @@
     "authors": [
         {
             "name": "Ralph Schindler",
-            "email": "ralph_schindler@ziffdavis.com"
+            "email": "ralph.schindler@ziffmedia.com"
         }
     ],
     "require": {
         "php": "^7.1"
     },
     "require-dev": {
-        "orchestra/testbench": "^3.8",
-        "intervention/image": "^2.4",
-        "phpunit/phpunit": "^7.1"
+        "laravel/framework": "^7.0",
+        "laravel/tinker": "^2.0",
+        "orchestra/testbench": "^5.0",
+        "phpunit/phpunit": "^9.0"
     },
     "autoload": {
         "psr-4": {
@@ -27,11 +28,13 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ZiffMedia\\Laravel\\EloquentImagery\\Test\\": "tests/"
+            "ZiffMedia\\Laravel\\EloquentImagery\\Test\\": "tests/",
+            "App\\": "demo/app/"
         }
     },
     "suggest": {
-        "intervention/image": "Intervention Image is necessary for serving images that need modification",
+        "ext-imagick": "Imagick image modifications",
+        "ext-gd": "GD Based image modifications",
         "laravel/framework": "This package is intended to be used with laravel/framework version >= 5.7"
     },
     "conflict": {
