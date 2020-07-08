@@ -28,8 +28,8 @@ class EloquentImageryProvider extends ServiceProvider
         }
 
         if (config('eloquent-imagery.render.enable')) {
-            if (!$this->app->runningInConsole() && !extension_loaded('imagick') && !class_exists(InterventionImage::class)) {
-                throw new RuntimeException('Eloquent Imagery requires ext/ImageMagick and intervention/image package in order to render images');
+            if (!$this->app->runningInConsole() && !extension_loaded('imagick')) {
+                throw new RuntimeException('Eloquent Imagery requires ext/ImageMagick in order to render images');
             }
 
             $imageRoute = rtrim(config('eloquent-imagery.render.route', '/imagery'), '/');
