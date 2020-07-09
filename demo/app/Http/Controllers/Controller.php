@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Widget;
+use App\SingleImageExample;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -14,8 +14,8 @@ class Controller extends BaseController
 
     public function welcome()
     {
-        $darkWidget = Widget::first();
+        $singleImageExamples = SingleImageExample::all();
 
-        return view('welcome', compact('darkWidget'));
+        return view('welcome', compact('singleImageExamples'));
     }
 }

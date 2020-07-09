@@ -29,22 +29,9 @@ class Crop implements ImagickTransformationInterface
 
         [$width, $height] = [$imagick->getImageWidth(), $imagick->getImageHeight()];
 
-        $imagick->cropImage($width, $height, $x, $y);
-
-        // if ($this->crop) {
-        //     if (is_array($this->crop)) {
-        //         $x = $this->crop[3];
-        //         $y = $this->crop[0];
-        //         $width = $img->width() - $x - $this->crop[1];
-        //         $height = $img->height() - $y - $this->crop[2];
-        //     } else {
-        //         $x = $this->crop;
-        //         $y = $this->crop;
-        //         $width = $img->width() - (2 * $this->crop);
-        //         $height = $img->height() - (2 * $this->crop);
-        //     }
-        //     $img->crop($width, $height, $x, $y);
-        // }
+        foreach ($imagick as $image) {
+            $image->cropImage($width, $height, $x, $y);
+        }
     }
 }
 

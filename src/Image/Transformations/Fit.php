@@ -27,57 +27,66 @@ class Fit implements ImagickTransformationInterface
         switch ($fit) {
 
             case 'resize':
-                $imagick->resizeImage(
-                    $width !== 0 ? $width : $originalWidth,
-                    $height !== 0 ? $height : $originalHeight,
-                    Imagick::FILTER_POINT,
-                    1
-                );
+                foreach ($imagick as $image) {
+                    $image->resizeImage(
+                        $width !== 0 ? $width : $originalWidth,
+                        $height !== 0 ? $height : $originalHeight,
+                        Imagick::FILTER_POINT,
+                        1
+                    );
+                }
 
                 break;
 
             case 'scale':
-                $imagick->scaleImage(
-                    $width !== 0 ? $width : 1920,
-                    $height !== 0 ? $height : 1920,
-                    true
-                );
+                foreach ($imagick as $image) {
+                    $image->scaleImage(
+                        $width !== 0 ? $width : 1920,
+                        $height !== 0 ? $height : 1920,
+                        true
+                    );
+                }
 
                 break;
 
             case 'limit':
-                $imagick->scaleImage(
-                    min($originalWidth, $width ?? $originalWidth),
-                    min($originalHeight, $height ?? $originalHeight),
-                    false
-                );
+                foreach ($imagick as $image) {
+                    $image->scaleImage(
+                        min($originalWidth, $width ?? $originalWidth),
+                        min($originalHeight, $height ?? $originalHeight),
+                        false
+                    );
+                }
 
                 break;
 
             case 'lpad':
                 [$originalWidth, $originalHeight] = [$imagick->getImageWidth(), $imagick->getImageHeight()];
 
-                $imagick->setImageBackgroundColor(
-                    $arguments->get('background', 'black')
-                );
-
                 $width = $width !== 0 ? $width : $originalWidth;
                 $height = $height !== 0 ? $height : $originalHeight;
 
-                if ($width > $originalWidth && $height > $originalHeight) {
-                    $imagick->extentImage(
-                        $width,
-                        $height,
-                        ($originalWidth - $width ) / 2,
-                        ($originalHeight - $height) / 2
+                foreach ($imagick as $image) {
+
+                    $image->setImageBackgroundColor(
+                        $arguments->get('background', 'black')
                     );
-                } else {
-                    $imagick->thumbnailImage(
-                        $width !== 0 ? $width : 1920,
-                        $height !== 0 ? $height : 1920,
-                        true,
-                        true
-                    );
+
+                    if ($width > $originalWidth && $height > $originalHeight) {
+                        $image->extentImage(
+                            $width,
+                            $height,
+                            ($originalWidth - $width ) / 2,
+                            ($originalHeight - $height) / 2
+                        );
+                    } else {
+                        $image->thumbnailImage(
+                            $width !== 0 ? $width : 1920,
+                            $height !== 0 ? $height : 1920,
+                            true,
+                            true
+                        );
+                    }
                 }
 
                 break;

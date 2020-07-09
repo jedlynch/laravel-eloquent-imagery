@@ -15,7 +15,9 @@ define('LARAVEL_START', microtime(true));
 |
 */
 
-require __DIR__.'/../vendor/autoload.php';
+/** @var Composer\Autoload\ClassLoader $autoloader */
+$autoloader = require __DIR__.'/../vendor/autoload.php';
+$autoloader->addClassMap(['DatabaseSeeder' => __DIR__ . '/database/seeds/DatabaseSeeder.php']);
 
 $app = require_once __DIR__.'/bootstrap/app.php';
 

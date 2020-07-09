@@ -12,17 +12,6 @@ class ImageTransformer
 
     public static function createDefault()
     {
-        // JpegColorspace
-        // JpegStripExif
-        // Crop
-        // Trim
-        // FitPad
-        // FitLimit
-        // FitResize
-        // FitScale
-        // Greyscale
-        // Watermark
-
         return new ImageTransformer(new Collection([
             new Transformations\JpegNormalize,
             new Transformations\JpegExif,
@@ -55,7 +44,13 @@ class ImageTransformer
         if ($this->extension === 'imagick') {
             $imagick = new \Imagick();
             $imagick->readImageBlob($imageBytes);
-            $imagick->setSamplingFactors(['2x2', '1x1', '1x1']); // jpeg only?
+
+            $isCoalesced = false;
+
+            if ($imagick->getImageFormat() === 'GIF' && $imagick->getNumberImages() > 1) {
+                $imagick = $imagick->coalesceImages();
+                $isCoalesced = true;
+            }
 
             $this->transformations
                 ->whereInstanceOf(Transformations\ImagickTransformationInterface::class)
@@ -63,27 +58,11 @@ class ImageTransformer
                     $transformation->applyImagick($arguments, $imagick);
                 });
 
-            return $imagick->getImageBlob();
+            if ($isCoalesced) {
+                $imagick = $imagick->deconstructImages();
+            }
+
+            return $imagick->getImagesBlob();
         }
     }
-
-// - Reduce quality to 75%
-// - If JPEG, set sampling factors?
-// - what is this purpose?
-//
-// Standalone opt-in features:
-// - Cropping X1,Y1,X2,Y2
-// - Trim Tolerance
-// - what is this?
-// - Fitting (mutually exclusive):
-// - FIT PAD LIMIT
-// - using canvas of specific size, enlarge image to fit canvas, centered
-// - FIT LIMIT
-// - fit to given height/width by extending height or width (will skew?)
-// - FIT SCALE
-// - fit to given height/width, but keep aspect ratio?
-// - FIT RESIZE
-// - simply resize to height/width
-// - Grayscale
-// - Add watermark
 }

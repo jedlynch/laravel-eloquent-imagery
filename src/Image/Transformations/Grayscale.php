@@ -13,8 +13,9 @@ class Grayscale implements ImagickTransformationInterface
             return;
         }
 
-        // $imagick->setColorspace(Imagick::COLORSPACE_GRAY);
-        $imagick->setImageColorspace(Imagick::COLORSPACE_GRAY);
+        foreach ($imagick as $image) {
+            $image->setImageColorspace(Imagick::COLORSPACE_GRAY);
+        }
     }
 }
 

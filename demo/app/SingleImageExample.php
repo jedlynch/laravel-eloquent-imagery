@@ -5,11 +5,15 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use ZiffMedia\Laravel\EloquentImagery\Eloquent\HasEloquentImagery;
 
-class Widget extends Model
+class SingleImageExample extends Model
 {
     use HasEloquentImagery;
 
+    protected $casts = [
+        'variations' => 'json'
+    ];
+
     protected $eloquentImagery = [
-        'image' => 'widgets/{id}.{extension}'
+        'image' => 'single-image-examples/{id}.{extension}'
     ];
 }
