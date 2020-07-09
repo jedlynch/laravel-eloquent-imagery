@@ -13,8 +13,6 @@
         "php": "^7.1"
     },
     "require-dev": {
-        "laravel/framework": "^7.0",
-        "laravel/tinker": "^2.0",
         "orchestra/testbench": "^5.0",
         "phpunit/phpunit": "^9.0"
     },
@@ -28,8 +26,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ZiffMedia\\Laravel\\EloquentImagery\\Test\\": "tests/",
-            "App\\": "demo/app/"
+            "ZiffMedia\\Laravel\\EloquentImagery\\Test\\": "tests/"
         }
     },
     "suggest": {
