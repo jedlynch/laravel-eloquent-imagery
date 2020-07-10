@@ -11,20 +11,20 @@
             </h3>
 
             <div class="space-y-6">
-                @foreach ($singleImageExample->variations as $variation)
+                @foreach ($singleImageExample->variations as $title => $transformation)
 
                     <div class="bg-white shadow sm:rounded-lg">
                         <div class="px-4 py-5 sm:p-6">
                             <h3 class="text-lg leading-6 font-medium text-gray-900">
-                                {{ $variation['title'] }}
+                                {{ $title }}
                             </h3>
                             <div class="mt-2 text-sm leading-5 text-gray-500">
-                                <a class="hover:underline" href="{{ $singleImageExample->image->url($variation['transformation'] ?? '') }}" target="_blank">
-                                    {{ $singleImageExample->image->url($variation['transformation'] ?? '') }}
+                                <a class="hover:underline" href="{{ $singleImageExample->image->url($transformation) }}" target="_blank">
+                                    {{ $singleImageExample->image->url($transformation) }}
                                 </a>
                             </div>
                             <div class="mt-5">
-                                <img src="{{ $singleImageExample->image->url($variation['transformation'] ?? '') }}">
+                                <img src="{{ $singleImageExample->image->url($transformation) }}">
                             </div>
                         </div>
                     </div>

@@ -15,6 +15,11 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
+if (file_exists(__DIR__ . '/../nova/composer.json')) {
+    $app->register(App\Providers\NovaServiceProvider::class);
+}
+
+
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces
