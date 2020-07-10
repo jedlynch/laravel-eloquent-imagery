@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->user();
-        // $this->singleImageExamples();
+        $this->singleImageExamples();
         $this->imageCollectionExamples();
     }
 
