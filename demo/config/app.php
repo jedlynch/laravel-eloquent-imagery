@@ -176,7 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         Laravel\Tinker\TinkerServiceProvider::class,
-        ZiffMedia\Laravel\EloquentImagery\EloquentImageryProvider::class
+        ZiffMedia\LaravelEloquentImagery\EloquentImageryProvider::class
     ],
 
     /*

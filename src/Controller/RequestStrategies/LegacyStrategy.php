@@ -1,10 +1,9 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Controller\RequestStrategies;
+namespace ZiffMedia\LaravelEloquentImagery\Controller\RequestStrategies;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use ZiffMedia\Laravel\EloquentImagery\Controller\ImageRequest;
+use ZiffMedia\LaravelEloquentImagery\Controller\ImageRequest;
 
 class LegacyStrategy
 {

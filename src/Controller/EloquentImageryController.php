@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Controller;
+namespace ZiffMedia\LaravelEloquentImagery\Controller;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -8,8 +8,8 @@ use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
-use ZiffMedia\Laravel\EloquentImagery\Image\ImageTransformer;
-use ZiffMedia\Laravel\EloquentImagery\Image\PlaceholderImageFactory;
+use ZiffMedia\LaravelEloquentImagery\Image\ImageTransformer;
+use ZiffMedia\LaravelEloquentImagery\Image\PlaceholderImageFactory;
 
 class EloquentImageryController extends Controller
 {

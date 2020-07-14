@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Controller;
+namespace ZiffMedia\LaravelEloquentImagery\Controller;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;

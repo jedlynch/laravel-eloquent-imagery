@@ -1,11 +1,11 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Test\Unit;
+namespace ZiffMedia\LaravelEloquentImagery\Test\Unit;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Orchestra\Testbench\TestCase;
-use ZiffMedia\Laravel\EloquentImagery\EloquentImageryProvider;
+use ZiffMedia\LaravelEloquentImagery\EloquentImageryProvider;
 
 abstract class AbstractTestCase extends TestCase
 {

@@ -1,8 +1,7 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Eloquent;
+namespace ZiffMedia\LaravelEloquentImagery\Eloquent;
 
-use Illuminate\Filesystem\FilesystemManager;
 use RuntimeException;
 
 /**

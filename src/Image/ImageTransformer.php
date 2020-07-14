@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Image;
+namespace ZiffMedia\LaravelEloquentImagery\Image;
 
 use Illuminate\Support\Collection;
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Test\Unit\Image;
+namespace ZiffMedia\LaravelEloquentImagery\Test\Unit\Image;
 
 use Illuminate\Support\Collection;
-use ZiffMedia\Laravel\EloquentImagery\Image\ImageTransformer;
-use ZiffMedia\Laravel\EloquentImagery\Test\Unit\AbstractTestCase;
+use ZiffMedia\LaravelEloquentImagery\Image\ImageTransformer;
+use ZiffMedia\LaravelEloquentImagery\Test\Unit\AbstractTestCase;
 
 class ImageTransformerTest extends AbstractTestCase
 {

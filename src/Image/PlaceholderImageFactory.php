@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Image;
+namespace ZiffMedia\LaravelEloquentImagery\Image;
 
 use Intervention\Image\AbstractFont;
 use Intervention\Image\ImageManager;

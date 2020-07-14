@@ -7,7 +7,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use ZiffMedia\Laravel\EloquentImagery\Nova\EloquentImageryField;
+use ZiffMedia\LaravelEloquentImagery\Nova\EloquentImageryField;
 
 class SingleImageExample extends Resource
 {

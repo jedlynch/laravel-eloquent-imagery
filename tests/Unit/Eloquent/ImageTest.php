@@ -1,11 +1,11 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Test\Unit\Eloquent;
+namespace ZiffMedia\LaravelEloquentImagery\Test\Unit\Eloquent;
 
 use Illuminate\Support\Collection;
 use RuntimeException;
-use ZiffMedia\Laravel\EloquentImagery\Eloquent\Image;
-use ZiffMedia\Laravel\EloquentImagery\EloquentImageryProvider;
+use ZiffMedia\LaravelEloquentImagery\Eloquent\Image;
+use ZiffMedia\LaravelEloquentImagery\EloquentImageryProvider;
 
 class ImageTest extends AbstractTestCase
 {

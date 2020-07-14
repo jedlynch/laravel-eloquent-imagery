@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ZiffMedia\\Laravel\\EloquentImagery\\": "src/"
+            "ZiffMedia\\LaravelEloquentImagery\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -26,7 +26,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ZiffMedia\\Laravel\\EloquentImagery\\Test\\": "tests/"
+            "ZiffMedia\\LaravelEloquentImagery\\Test\\": "tests/"
         }
     },
     "suggest": {
@@ -41,7 +41,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "ZiffMedia\\Laravel\\EloquentImagery\\EloquentImageryProvider"
+                "ZiffMedia\\LaravelEloquentImagery\\EloquentImageryProvider"
             ]
         }
     }

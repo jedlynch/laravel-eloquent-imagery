@@ -1,13 +1,13 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery\Test\Unit\Eloquent;
+namespace ZiffMedia\LaravelEloquentImagery\Test\Unit\Eloquent;
 
 use ArrayIterator;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use ZiffMedia\Laravel\EloquentImagery\Eloquent\Image;
-use ZiffMedia\Laravel\EloquentImagery\Eloquent\ImageCollection;
-use ZiffMedia\Laravel\EloquentImagery\EloquentImageryProvider;
+use ZiffMedia\LaravelEloquentImagery\Eloquent\Image;
+use ZiffMedia\LaravelEloquentImagery\Eloquent\ImageCollection;
+use ZiffMedia\LaravelEloquentImagery\EloquentImageryProvider;
 
 class ImageCollectionTest extends AbstractTestCase
 {

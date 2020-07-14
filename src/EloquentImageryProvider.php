@@ -1,11 +1,10 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery;
+namespace ZiffMedia\LaravelEloquentImagery;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Intervention\Image\Image as InterventionImage;
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaCoreServiceProvider;

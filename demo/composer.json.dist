@@ -22,7 +22,7 @@
   "autoload": {
     "psr-4": {
       "App\\": "app/",
-      "ZiffMedia\\Laravel\\EloquentImagery\\": "../src/"
+      "ZiffMedia\\LaravelEloquentImagery\\": "../src/"
     },
     "classmap": [
       "database/seeds",
@@ -39,10 +39,7 @@
   },
   "extra": {
     "laravel": {
-      "dont-discover": [],
-      "providers": [
-        "ZiffMedia\\Laravel\\EloquentImagery\\EloquentImageryProvider"
-      ]
+      "dont-discover": []
     }
   },
   "minimum-stability": "dev",

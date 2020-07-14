@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use ZiffMedia\Laravel\EloquentImagery\Eloquent\HasEloquentImagery;
+use ZiffMedia\LaravelEloquentImagery\Eloquent\HasEloquentImagery;
 
 class SingleImageExample extends Model
 {
