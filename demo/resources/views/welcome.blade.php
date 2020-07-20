@@ -30,6 +30,23 @@
                     </div>
 
                 @endforeach
+
+                <div class="bg-white shadow sm:rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Using the "thumbnail preset"
+                        </h3>
+                        <div class="mt-2 text-sm leading-5 text-gray-500">
+                            <a class="hover:underline" href="{{ $singleImageExample->image->url('thumbnail') }}" target="_blank">
+                                {{ $singleImageExample->image->url('thumbnail') }}
+                            </a>
+                        </div>
+                        <div class="mt-5">
+                            <img src="{{ $singleImageExample->image->url('thumbnail') }}">
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     @endforeach

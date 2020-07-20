@@ -4,6 +4,7 @@ namespace ZiffMedia\LaravelEloquentImagery\Test\Unit\Eloquent;
 
 use ZiffMedia\LaravelEloquentImagery\Eloquent\EloquentImageryObserver;
 use ZiffMedia\LaravelEloquentImagery\Eloquent\Image;
+use ZiffMedia\LaravelEloquentImagery\Test\Unit\AbstractTestCase;
 
 class EloquentImageryObserverTest extends AbstractTestCase
 {

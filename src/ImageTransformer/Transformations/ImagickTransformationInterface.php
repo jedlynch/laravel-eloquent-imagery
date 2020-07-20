@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\LaravelEloquentImagery\Image\Transformations;
+namespace ZiffMedia\LaravelEloquentImagery\ImageTransformer\Transformations;
 
 use Illuminate\Support\Collection;
 use Imagick;

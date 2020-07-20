@@ -1,8 +1,9 @@
 <?php
 
-namespace ZiffMedia\LaravelEloquentImagery\Image;
+namespace ZiffMedia\LaravelEloquentImagery\ImageTransformer;
 
 use Illuminate\Support\Collection;
+use RuntimeException;
 
 class ImageTransformer
 {
@@ -10,20 +11,15 @@ class ImageTransformer
 
     protected $extension;
 
-    public static function createDefault()
+    public function __construct(Collection $transformations = null)
     {
-        return new ImageTransformer(new Collection([
+        $this->transformations = $transformations ?? new Collection([
             new Transformations\JpegNormalize,
             new Transformations\JpegExif,
             new Transformations\Quality,
             new Transformations\Fit,
             new Transformations\Grayscale,
-        ]));
-    }
-
-    public function __construct(Collection $transformations = null)
-    {
-        $this->transformations = $transformations ?? new Collection;
+        ]);
 
         $extensions = (array) config('eloquent-imagery.render.transformations.extension_priority');
 
@@ -35,7 +31,7 @@ class ImageTransformer
         }
 
         if ($this->extension === null) {
-            throw new \RuntimeException('No valid image library was found in php, tried: ' . implode(', ', $extensions));
+            throw new RuntimeException('No valid image library was found in php, tried: ' . implode(', ', $extensions));
         }
     }
 
@@ -64,5 +60,7 @@ class ImageTransformer
 
             return $imagick->getImagesBlob();
         }
+
+        throw new RuntimeException('Currently only imagick is supported');
     }
 }

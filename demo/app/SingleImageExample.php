@@ -14,6 +14,12 @@ class SingleImageExample extends Model
     ];
 
     protected $eloquentImagery = [
-        'image' => 'single-image-examples/{id}.{extension}'
+        'image' => [
+            'path' => 'single-image-examples/{id}.{extension}',
+            'presets' => [
+                'thumbnail' => 'fit_resize|size_50x50',
+                'timestampped' => 'v'
+            ]
+        ]
     ];
 }

@@ -33,7 +33,7 @@ class EloquentImageryProvider extends ServiceProvider
 
             $imageRoute = rtrim(config('eloquent-imagery.render.route', '/imagery'), '/');
 
-            $router->get("{$imageRoute}/{path}", Controller\EloquentImageryController::class . '@render')
+            $router->get("{$imageRoute}/{path}", Controllers\EloquentImageryController::class . '@render')
                 ->where('path', '(.*)')
                 ->name('eloquent-imagery.render')
                 ->domain(config('eloquent-imagery.render.domain', null));

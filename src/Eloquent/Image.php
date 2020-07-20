@@ -11,10 +11,10 @@ use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable;
-use InvalidArgumentException;
 use JsonSerializable;
 use OutOfBoundsException;
 use RuntimeException;
+use ZiffMedia\LaravelEloquentImagery\UrlHandler\UrlHandler;
 
 /**
  * @property-read $index
@@ -34,6 +34,7 @@ class Image implements JsonSerializable
 
     /** @var string */
     protected $pathTemplate = null;
+    protected $presets = [];
 
     /** @var null|integer This is filled when an image is used in an ImageCollection */
     protected $index = null;
@@ -53,13 +54,14 @@ class Image implements JsonSerializable
     protected $removeAtPathOnFlush = null;
     protected $isReadOnly = false;
 
-    public function __construct($pathTemplate)
+    public function __construct(string $pathTemplate, array $presets)
     {
         if (!static::$filesystem) {
             static::$filesystem = app(FilesystemManager::class)->disk(config('eloquent-imagery.filesystem', config('filesystems.default')));
         }
 
         $this->pathTemplate = $pathTemplate;
+        $this->presets = $presets;
         $this->metadata = new Collection;
     }
 
@@ -78,43 +80,23 @@ class Image implements JsonSerializable
         return $this->exists;
     }
 
-    public function url($modifiers = null)
+    public function url($transformations = null)
     {
         $renderRouteEnabled = config('eloquent-imagery.render.enable');
 
-        if ($renderRouteEnabled === false && $modifiers) {
-            throw new RuntimeException('Cannot process render options unless the rendering route is enabled');
+        if ($renderRouteEnabled === false && $transformations) {
+            throw new RuntimeException('Cannot process render transformation options unless the rendering route is enabled');
         }
 
         if ($renderRouteEnabled === false && static::$filesystem instanceof Cloud) {
             return static::$filesystem->url($this->path);
         }
 
-        if ($modifiers) {
-            $modifierParts = explode('|', $modifiers);
-            sort($modifierParts);
-            $modifiers = implode('.', $modifierParts);
-            $modifiers = str_replace(':', '_', $modifiers);
+        if (isset($this->presets[$transformations])) {
+            $transformations = $this->presets[$transformations];
         }
 
-        // keyed with [dirname, filename, basename, extension]
-        $pathinfo = pathinfo($this->path);
-
-        if (!isset($pathinfo['dirname'])) {
-            throw new InvalidArgumentException("pathinfo() was unable to parse {$this->path} into path parts.");
-        }
-
-        $pathWithModifiers =
-            (($pathinfo['dirname'] !== '.') ? "{$pathinfo['dirname']}/" : '')
-            . $pathinfo['filename']
-            . ($modifiers ? ".{$modifiers}" : '')
-            . ".{$pathinfo['extension']}";
-
-        if ($this->flush === true) {
-            return '';
-        }
-
-        return url()->route('eloquent-imagery.render', $pathWithModifiers);
+        return (new UrlHandler)->createUrl($this, $transformations);
     }
 
     public function setStateFromAttributeData($attributeData)

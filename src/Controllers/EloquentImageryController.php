@@ -1,15 +1,16 @@
 <?php
 
-namespace ZiffMedia\LaravelEloquentImagery\Controller;
+namespace ZiffMedia\LaravelEloquentImagery\Controllers;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use ZiffMedia\LaravelEloquentImagery\Image\ImageTransformer;
-use ZiffMedia\LaravelEloquentImagery\Image\PlaceholderImageFactory;
+use ZiffMedia\LaravelEloquentImagery\ImageTransformer\ImageTransformer;
+use ZiffMedia\LaravelEloquentImagery\UrlHandler\UrlHandler;
 
 class EloquentImageryController extends Controller
 {
@@ -32,7 +33,12 @@ class EloquentImageryController extends Controller
         /** @var Filesystem $filesystem */
         $filesystem = app(FilesystemManager::class)->disk($disk);
 
-        $imageRequest = ImageRequest::create($request);
+        $imageRequestData = (new UrlHandler)->getDataFromRequest($request);
+
+        $imageActualPath = $imageRequestData->get('path');
+
+        // $imageRequest = ImageRequest::create();
+        // $imageRequest->fillFromRequest($request);
 
         // assume the mime type is PNG unless otherwise specified
         $mimeType = 'image/png';
@@ -40,16 +46,19 @@ class EloquentImageryController extends Controller
 
         // step 1: if placeholder request, generate a placeholder
         // if ($filenameWithoutExtension === config('eloquent-imagery.render.placeholder.filename') && config('eloquent-imagery.render.placeholder.enable')) {
-        if ($imageRequest->isPlaceholderRequest()) {
+        if (
+            config('eloquent-imagery.render.placeholder.enable')
+            && $imageActualPath === config('eloquent-imagery.render.placeholder.filename')
+        ) {
             list ($placeholderWidth, $placeholderHeight) = isset($modifierOperators['size']) ? explode('x', $modifierOperators['size']) : [400, 400];
-            $imageBytes = (new PlaceholderImageFactory())->create($placeholderWidth, $placeholderHeight, $modifierOperators['bgcolor'] ?? null);
+            $imageBytes = $this->createPlaceHolderImage($imageRequestData);
         }
 
         // step 2: no placeholder, look for actual file on designated filesystem
         if (!$imageBytes) {
             try {
-                $imageBytes = $filesystem->get($imageRequest->imagePath);
-                $mimeType = $filesystem->getMimeType($imageRequest->imagePath);
+                $imageBytes = $filesystem->get($imageActualPath);
+                $mimeType = $filesystem->getMimeType($imageActualPath);
             } catch (FileNotFoundException $e) {
                 $imageBytes = null;
             }
@@ -60,8 +69,8 @@ class EloquentImageryController extends Controller
             /** @var Filesystem $fallbackFilesystem */
             $fallbackFilesystem = app(FilesystemManager::class)->disk(config('eloquent-imagery.render.fallback.filesystem'));
             try {
-                $imageBytes = $fallbackFilesystem->get($imageRequest->imagePath);
-                $mimeType = $fallbackFilesystem->getMimeType($imageRequest->imagePath);
+                $imageBytes = $fallbackFilesystem->get($imageActualPath);
+                $mimeType = $fallbackFilesystem->getMimeType($imageActualPath);
                 if (config('eloquent-imagery.render.fallback.mark_images')) {
                     $imageModifier = new ImageTransformer();
                     $imageBytes = $imageModifier->addFromFallbackWatermark($imageBytes);
@@ -74,12 +83,12 @@ class EloquentImageryController extends Controller
         // step 4: no placeholder, no primary FS image, no fallback, generate a placeholder if enabled for missing files
         if (!$imageBytes && config('eloquent-imagery.render.placeholder.use_for_missing_files') === true) {
             list ($placeholderWidth, $placeholderHeight) = isset($modifierOperators['size']) ? explode('x', $modifierOperators['size']) : [400, 400];
-            $imageBytes = (new PlaceholderImageFactory())->create($placeholderWidth, $placeholderHeight, $modifierOperators['bgcolor'] ?? null);
+            $imageBytes = $this->createPlaceHolderImage($imageRequestData);
         }
 
         abort_if(!$imageBytes, 404); // no image, no fallback, no placeholder
 
-        $imageBytes = ImageTransformer::createDefault()->transform($imageRequest->imageModifiers, $imageBytes);
+        $imageBytes = (new ImageTransformer)->transform($imageRequestData, $imageBytes);
 
         $browserCacheMaxAge = config('eloquent-imagery.render.browser_cache_max_age');
 
@@ -93,5 +102,20 @@ class EloquentImageryController extends Controller
         }
 
         return $response;
+    }
+
+    protected function createPlaceHolderImage(Collection $imageRequestData)
+    {
+        // $image = (new ImageManager(['driver' => 'imagick']))->canvas($width, $height, $backgroundColor);
+        //
+        // $image->text("{$width}x{$height}", $width / 2, $height / 2, function(AbstractFont $font) use ($width) {
+        //     $font->align('center');
+        //     $font->valign('middle');
+        //     $font->color('000000');
+        //     $font->file(__DIR__ . '/../../fonts/OverpassMono-Regular.ttf');
+        //     $font->size(ceil((.9 * $width) / 7));
+        // });
+        //
+        // return $image->encode('png')->__toString();
     }
 }
