@@ -19,7 +19,9 @@ class UrlHandler
 
     public function getDataFromRequest(Request $request): Collection
     {
-        return $this->strategy->getDataFromRequest($request);
+        $data = $this->strategy->getDataFromRequest($request);
+
+        return $data;
     }
 
     public function createUrl(Image $image, $transformations)

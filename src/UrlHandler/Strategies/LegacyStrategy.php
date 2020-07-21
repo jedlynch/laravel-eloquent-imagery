@@ -27,7 +27,9 @@ class LegacyStrategy implements StrategyInterface
         $imageRequestData = new Collection();
 
         $pathInfo = pathinfo($path);
-        $imagePath = $pathInfo['dirname'] . '/';
+        $imagePath = $pathInfo['dirname'] !== '.'
+            ? $pathInfo['dirname'] . '/'
+            : '';
 
         $filenameWithoutExtension = $pathInfo['filename'];
 
@@ -51,10 +53,6 @@ class LegacyStrategy implements StrategyInterface
         }
 
         $imageRequestData['path'] = $imagePath;
-
-        if (isset($imageRequestData['background'])) {
-            $imageRequestData['background'] = '#' . $imageRequestData['background'];
-        }
 
         return $imageRequestData;
     }

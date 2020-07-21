@@ -38,6 +38,16 @@ class ImageTransformer
     public function transform(Collection $arguments, $imageBytes)
     {
         if ($this->extension === 'imagick') {
+
+            // normalize background for imagick
+            if ($arguments->has('background')) {
+                $background = $arguments->get('background');
+
+                if (preg_match('/^[A-Fa-f0-9]{3,6}$/', $background)) {
+                    $arguments['background'] = '#' . $background;
+                }
+            }
+
             $imagick = new \Imagick();
             $imagick->readImageBlob($imageBytes);
 
