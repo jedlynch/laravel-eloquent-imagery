@@ -4,7 +4,7 @@
       <div class="bg-white rounded-lg">
         <draggable v-model="images" group="image-group" v-on:start="drag=true" v-on:end="drag=false" :class="`flex flex-wrap mb-2 laravel-eloquent-imagery-${this.resourceName}`">
           <div v-for="(image, index) in images" :class="`pl-1 pr-1 border border-70 flex items-end m-1 laravel-eloquent-imagery-image-${(index + 1)}`">
-            <image-card-input v-bind:image.sync="image" v-on:remove-image="removeImage"></image-card-input>
+              <image-card-input v-bind:image.sync="image" v-on:remove-image="removeImage"></image-card-input>
           </div>
 
           <!--<button v-on:click.prevent="debugThis">De</button>-->
@@ -12,12 +12,12 @@
           <div v-if="(isCollection == false && images.length == 0) || isCollection" slot="footer" class="flex items-center pl-1 pr-1 m-1 border border-70">
             <div class="content-center px-6 py-4">
               <input
-                      ref="addNewImageFileInput"
-                      class="select-none form-file-input"
-                      type="file"
-                      v-bind:id="`eloquent-imagery-` + this.field.name + `-add-image`"
-                      name="name"
-                      v-on:change="addImage"
+                ref="addNewImageFileInput"
+                class="select-none form-file-input"
+                type="file"
+                v-bind:id="`eloquent-imagery-` + this.field.name + `-add-image`"
+                name="name"
+                v-on:change="addImage"
               />
 
               <span v-on:click="() => this.$refs['addNewImageFileInput'].click()">
