@@ -7,8 +7,8 @@ if (! function_exists('eloquent_imagery_url')) {
 
     /**
      * Apply modifiers to a url
-     * @param $relativePath
-     * @param $modifiers
+     * @param string $relativePath
+     * @param array $modifiers
      * @return string
      */
     function eloquent_imagery_url($relativePath, string $modifiers = '') {

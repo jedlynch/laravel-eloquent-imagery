@@ -107,7 +107,14 @@ return [
         /**
          * What to set the browsers max age cache header to from the render route
          */
-        'browser_cache_max_age' => 31536000
+        'browser_cache_max_age' => 31536000,
+
+        /**
+         *
+         */
+        'transformations' => [
+            'extension_priority' => ['imagick', 'gd']
+        ]
     ],
 
     /**

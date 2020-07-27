@@ -1,11 +1,10 @@
 <?php
 
-namespace ZiffMedia\Laravel\EloquentImagery;
+namespace ZiffMedia\LaravelEloquentImagery;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Intervention\Image\Image as InterventionImage;
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaCoreServiceProvider;
@@ -28,13 +27,13 @@ class EloquentImageryProvider extends ServiceProvider
         }
 
         if (config('eloquent-imagery.render.enable')) {
-            if (!$this->app->runningInConsole() && !extension_loaded('imagick') && !class_exists(InterventionImage::class)) {
-                throw new RuntimeException('Eloquent Imagery requires ext/ImageMagick and intervention/image package in order to render images');
+            if (!$this->app->runningInConsole() && !extension_loaded('imagick')) {
+                throw new RuntimeException('Eloquent Imagery requires ext/ImageMagick in order to render images');
             }
 
             $imageRoute = rtrim(config('eloquent-imagery.render.route', '/imagery'), '/');
 
-            $router->get("{$imageRoute}/{path}", Controller\EloquentImageryController::class . '@render')
+            $router->get("{$imageRoute}/{path}", Controllers\EloquentImageryController::class . '@render')
                 ->where('path', '(.*)')
                 ->name('eloquent-imagery.render')
                 ->domain(config('eloquent-imagery.render.domain', null));
