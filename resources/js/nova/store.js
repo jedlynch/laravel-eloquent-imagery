@@ -69,9 +69,9 @@ export default {
         modalPromise = dispatch('showModal',modal);
       });
 
-      modalPromise.then((shouldLoadImage)=> {
+      return modalPromise.then((shouldLoadImage)=> {
         if(!shouldLoadImage){
-          return;
+          return false;
         }
 
         let images = state.images

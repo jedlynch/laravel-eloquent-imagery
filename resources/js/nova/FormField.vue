@@ -99,6 +99,9 @@
 
         this.$store.dispatch(`eloquentImagery/${this.field.name}/addImageFromFile`, payload)
                 .then(image => {
+                  if(!image){
+                    this.$refs['addNewImageFileInput'].value = null;
+                  }
                   this.imagePath = metadataToken
                   this.replaceImage = false
                 });
@@ -106,7 +109,6 @@
 
       removeImage (image) {
         this.$store.dispatch(`eloquentImagery/${this.field.name}/removeImage`, image)
-        //TODO: Everything should go through store.js
         this.$refs['addNewImageFileInput'].value = null;
       },
 
